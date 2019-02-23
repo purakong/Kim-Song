@@ -17,9 +17,10 @@ void main() {
 
 	VideoCapture capture(1);
 	Mat frame;
-	Mat right = Mat::zeros(640, 720, CV_8UC3);
+	Mat front = Mat::zeros(640, 640, CV_8UC3);
+	Mat back = Mat::zeros(640, 640, CV_8UC3);
 	int ch, x, y;
-	char imgName[] = { "calibration_k.bmp" };
+	char imgName[] = { "calibration_000.bmp" };
 
 	while (1) {
 		capture >> frame;
@@ -30,18 +31,26 @@ void main() {
 			for (y = 0; y < 640; y++) {
 				for (x = 0; x < 640; x++) {
 
-					right.at<Vec3b>(y, x)[ch] = frame.at<Vec3b>(y, x + 640)[ch];
-
+					back.at<Vec3b>(y, x)[ch] = frame.at<Vec3b>(y, x + 640)[ch];
+					front.at<Vec3b>(y, x)[ch] = frame.at<Vec3b>(y, x)[ch];
 				}
 			}
 		}
-		imshow("right side of ricoh", right);
+		imshow("front cam of ricoh", front);
+		imshow("back cam of ricoh", back);
 
 		char ch = waitKey(10);
 		if (ch == 32) break;
 		else if (ch == 'c') {
-			imwrite(imgName, right);
-			imgName[12]++;
+			imwrite(imgName, front);
+			if (imgName[12] != '`')
+				imgName[12]++;
+			else if (imgName[13] != '`')
+				imgName[13]++;
+			else if (imgName[14] != '`')
+				imgName[14]++;
+			//imwrite(imgName, back);
+			//imgName[12]++;			
 		}
 
 	}
